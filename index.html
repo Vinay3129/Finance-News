@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Financial News Newsletter</title>
+  <style>
+  body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #121212;
+  color: #e0e0e0;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  border-radius: 10px;
+}
+
+h1 {
+  text-align: center;
+  color: #90caf9;
+  margin-bottom: 30px;
+  font-weight: 700;
+  font-size: 2.5em;
+  text-shadow: 0 0 10px #90caf9;
+}
+
+.news-item {
+  border-bottom: 1px solid #333;
+  padding: 15px 0;
+  transition: background 0.3s ease;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.news-item:hover {
+  background: #1e88e5;
+  color: white;
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.5);
+}
+
+.news-item a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2em;
+}
+
+.news-item a:hover {
+  text-decoration: underline;
+}
+
+.date {
+  color: #90caf9;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+#loading {
+  text-align: center;
+  font-size: 1.4em;
+  color: #90caf9;
+  margin-top: 40px;
+}
+  </style>
+</head>
+<body>
+
+  <h1>Financial News - India</h1>
+  <div id="news"></div>
+  <div id="loading">Loading news...</div>
+
+  <script>
+    const apiKey = "pub_f1b94a0af239455b9d6b8c8197720de0"
+    const apiUrl = `https://newsdata.io/api/1/news?apikey=${apiKey}&country=in&category=business`;
+
+    async function fetchNews() {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        displayNews(data.results);
+      } catch (error) {
+        document.getElementById("loading").textContent = "Failed to load news.";
+        console.error("Error fetching news:", error);
+      }
+    }
+
+    function displayNews(newsItems) {
+      const newsDiv = document.getElementById("news");
+      newsDiv.innerHTML = "";
+      if (!newsItems || newsItems.length === 0) {
+        newsDiv.innerHTML = "<p>No news found.</p>";
+        return;
+      }
+
+      newsItems.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+      newsItems.forEach(item => {
+        const newsEl = document.createElement("div");
+        newsEl.classList.add("news-item");
+
+        const link = document.createElement("a");
+        link.href = item.link;
+        link.target = "_blank";
+        link.textContent = item.title;
+
+        const date = document.createElement("div");
+        date.classList.add("date");
+        date.textContent = new Date(item.pubDate).toLocaleString();
+
+        newsEl.appendChild(link);
+        newsEl.appendChild(date);
+        newsDiv.appendChild(newsEl);
+      });
+
+      document.getElementById("loading").style.display = "none";
+    }
+
+    fetchNews();
+  </script>
+</body>
+</html>
