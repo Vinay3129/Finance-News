@@ -192,27 +192,47 @@
   </footer>
 
   <script>
-    const newsContainer = document.getElementById('news');
-    const apiKey = 'demo'; // Replace with your real API key
+    const API_KEY = 'pub_f1b94a0af239455b9d6b8c8197720de0'; // Replace with your real API key
 
-    async function fetchNews() {
-      const res = await fetch(`https://newsdata.io/api/1/news?apikey=pub_f1b94a0af239455b9d6b8c8197720de0&language=en&country=in,us&category=business,top`);
-      const data = await res.json();
+    const regions = [
+      { id: 'news', query: 'top' }, // Top headlines
+      { id: 'news-india', country: 'in' },
+      { id: 'news-us', country: 'us' },
+      { id: 'news-asia', country: 'cn,jp,sg,id,ae,sa,kr' }, // Asia region
+      { id: 'news-europe', country: 'de,fr,it,gb,es,nl' }, // Europe region
+      { id: 'news-crypto', category: 'cryptocurrency' }
+   ];
 
-      newsContainer.innerHTML = '';
+   async function fetchNews({ id, country, category, query = 'business' }) {
+     let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en`;
 
-      data.results.forEach(article => {
-        const card = document.createElement('div');
-        card.className = 'news-card';
-        card.innerHTML = `
-          <h3><a href="${article.link}" target="_blank">${article.title}</a></h3>
-          <p>${article.pubDate}</p>
-        `;
-        newsContainer.appendChild(card);
-      });
+     if (country) url += `&country=${country}`;
+     if (category) url += `&category=${category}`;
+     if (query && !category) url += `&category=${query}`;
+
+     try {
+       const res = await fetch(url);
+       const data = await res.json();
+
+       const container = document.getElementById(id);
+       container.innerHTML = '';
+
+       data.results?.forEach(article => {
+         const card = document.createElement('div');
+         card.className = 'news-card';
+         card.innerHTML = `
+           <h3><a href="${article.link}" target="_blank">${article.title}</a></h3>
+           <p>${new Date(article.pubDate).toLocaleString()}</p>
+         `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error(`Failed to load news for ${id}`, err);
+      }
     }
 
-    fetchNews();
+  // Call fetchNews for all regions
+    regions.forEach(region => fetchNews(region));
   </script>
 </body>
 </html>
