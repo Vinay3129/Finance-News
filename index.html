@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Finance Space</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -40,40 +44,47 @@
       text-decoration: underline;
     }
 
-    main {
-    <main>
-  <section id="top">
-    <h2 class="section-title">Top Financial Headlines</h2>
-    <div class="news-container" id="news">
-      <!-- News articles will be injected here by JS -->
-    </div>
-  </section>
+    .section-title {
+      font-size: 1.4rem;
+      margin: 1.5rem 0 1rem;
+      padding-left: 2rem;
+      color: #333;
+    }
 
-  <section id="india">
-    <h2 class="section-title">🇮🇳 India News</h2>
-    <div class="news-container" id="news-india"></div>
-  </section>
+    .news-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 0 2rem 2rem;
+    }
 
-  <section id="us">
-    <h2 class="section-title">🇺🇸 US News</h2>
-    <div class="news-container" id="news-us"></div>
-  </section>
+    .news-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
 
-  <section id="asia">
-    <h2 class="section-title">🌏 Asia News</h2>
-    <div class="news-container" id="news-asia"></div>
-  </section>
+    .news-card h3 {
+      font-size: 1.1rem;
+      color: #004080;
+    }
 
-  <section id="europe">
-    <h2 class="section-title">🇪🇺 Europe News</h2>
-    <div class="news-container" id="news-europe"></div>
-  </section>
+    .news-card a {
+      text-decoration: none;
+      color: #004080;
+    }
 
-  <section id="crypto">
-    <h2 class="section-title">💰 Crypto News</h2>
-    <div class="news-container" id="news-crypto"></div>
-  </section>
-</main>
+    .news-card a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #004080;
+      color: white;
+      margin-top: 2rem;
     }
   </style>
 </head>
@@ -91,11 +102,36 @@
   </header>
 
   <main>
-    <section>
+    <section id="top">
       <h2 class="section-title">Top Financial Headlines</h2>
       <div class="news-container" id="news">
-        <!-- News articles will be injected here by JS -->
+        <!-- JS will inject articles here -->
       </div>
+    </section>
+
+    <section id="india">
+      <h2 class="section-title">🇮🇳 India News</h2>
+      <div class="news-container" id="news-india"></div>
+    </section>
+
+    <section id="us">
+      <h2 class="section-title">🇺🇸 US News</h2>
+      <div class="news-container" id="news-us"></div>
+    </section>
+
+    <section id="asia">
+      <h2 class="section-title">🌏 Asia News</h2>
+      <div class="news-container" id="news-asia"></div>
+    </section>
+
+    <section id="europe">
+      <h2 class="section-title">🇪🇺 Europe News</h2>
+      <div class="news-container" id="news-europe"></div>
+    </section>
+
+    <section id="crypto">
+      <h2 class="section-title">💰 Crypto News</h2>
+      <div class="news-container" id="news-crypto"></div>
     </section>
   </main>
 
@@ -105,7 +141,7 @@
 
   <script>
     const newsContainer = document.getElementById('news');
-    const apiKey = 'demo'; // Replace with your actual API key from NewsData.io or other
+    const apiKey = 'demo'; // Replace with your real API key
 
     async function fetchNews() {
       const res = await fetch(`https://newsdata.io/api/1/news?apikey=pub_f1b94a0af239455b9d6b8c8197720de0&language=en&country=in,us&category=business,top`);
@@ -126,6 +162,5 @@
 
     fetchNews();
   </script>
-
 </body>
 </html>
