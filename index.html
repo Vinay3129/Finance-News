@@ -117,7 +117,7 @@
     const apiKey = 'demo'; // Replace with your actual API key from NewsData.io or other
 
     async function fetchNews() {
-      const res = await fetch(`https://newsdata.io/api/1/news?apikey=${apiKey}&language=en&country=in,us&category=business,top`);
+      const res = await fetch(`https://newsdata.io/api/1/news?apikey=pub_f1b94a0af239455b9d6b8c8197720de0&language=en&country=in,us&category=business,top`);
       const data = await res.json();
 
       newsContainer.innerHTML = '';
