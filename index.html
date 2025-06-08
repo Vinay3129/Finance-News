@@ -223,6 +223,10 @@
      const res = await fetch(url);
      const data = await res.json();
 
+     if (!data || !Array.isArray(data.results)) {
+       throw new Error(`Invalid or empty response for ${id}`);
+     }
+
      const container = document.getElementById(id);
      container.innerHTML = '';
 
