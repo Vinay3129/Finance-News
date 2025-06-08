@@ -213,42 +213,42 @@
   ];
 
   async function fetchNews({ id, country, category, query = 'business' }) {
-    let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en`;
+   let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en`;
 
-    if (country) url += `&country=${country}`;
-    if (category) url += `&category=${category}`;
-    if (query && !category) url += `&category=${query}`;
+   if (country) url += `&country=${country}`;
+   if (category) url += `&category=${category}`;
+   if (query && !category) url += `&category=${query}`;
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+   try {
+     const res = await fetch(url);
+     const data = await res.json();
 
-      const container = document.getElementById(id);
-      container.innerHTML = '';
+     const container = document.getElementById(id);
+     container.innerHTML = '';
 
-   if (!data.results || data.results.length === 0) {
-     const errorCard = document.createElement('div');
-     errorCard.className = 'news-card';
-     errorCard.innerHTML = `<p>No news found for this section right now. Please check back later.</p>`;
-     container.appendChild(errorCard);
-   } else {
-     data.results.forEach(article => {
-       const card = document.createElement('div');
-       card.className = 'news-card';
-       card.innerHTML = `
-         <h3><a href="${article.link}" target="_blank">${article.title}</a></h3>
-         <p>${new Date(article.pubDate).toLocaleString()}</p>
-       `;
-      container.appendChild(card);
-    });
+     if (!data.results || data.results.length === 0) {
+       const errorCard = document.createElement('div');
+       errorCard.className = 'news-card';
+       errorCard.innerHTML = `<p>No news found for this section right now. Please check back later.</p>`;
+      container.appendChild(errorCard);
+     } else {
+       data.results.forEach(article => {
+         const card = document.createElement('div');
+         card.className = 'news-card';
+         card.innerHTML = `
+           <h3><a href="${article.link}" target="_blank">${article.title}</a></h3>
+           <p>${new Date(article.pubDate).toLocaleString()}</p>
+         `;
+         container.appendChild(card);
+       });
+     }
+
+   } catch (err) {
+     console.error(`❌ Failed to load news for ${id}:`, err);
+     document.getElementById(id).innerHTML =
+       '<p>Error loading news. Please try again later.</p>';
    }
-      
-    } catch (err) {
-      console.error(`❌ Failed to load news for ${id}:`, err);
-      document.getElementById(id).innerHTML =
-        '<p>Error loading news. Please try again later.</p>';
-    }
-  }
+ }
 
   // Call fetchNews for all regions
   regions.forEach(region => fetchNews(region));
