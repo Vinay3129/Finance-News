@@ -192,80 +192,109 @@
   </footer>
 
 <script>
-  const API_KEY = 'pub_f1b94a0af239455b9d6b8c8197720de0'; // Replace with your key
+  const newsdataAPI = 'pub_f1b94a0af239455b9d6b8c8197720de0';
+  const gnewsAPI = 'c22aa4e5b3154001c857762ecd73d7ff';
+  const mediastackAPI = '4e4537e9a8cbcde4a88979ed2ffc691f';
+  const finnhubAPI = 'd12jnq1r01qmhi3j2sogd12jnq1r01qmhi3j2sp0';
 
   const regions = [
-    { id: 'news', query: 'top' }, // Top headlines
+    { id: 'news', query: 'top' },
     { id: 'news-india', country: 'in' },
     { id: 'news-us', country: 'us' },
-    {
-      id: 'news-asia',
-      country: 'cn,jp,in,id,sg,my,th,vn,kr,bd,pk,ae,sa'
-    },
-    {
-      id: 'news-europe',
-      country: 'de,fr,it,gb,es,nl,se,no,fi,pl,cz,ch,at'
-    },
-    {
-      id: 'news-crypto',
-      category: 'cryptocurrency'
-    }
+    { id: 'news-asia', country: 'cn,jp,in,id,sg,my,th,vn,kr,bd,pk,ae,sa' },
+    { id: 'news-europe', country: 'de,fr,it,gb,es,nl,se,no,fi,pl,cz,ch,at' }
+    // ❌ Do NOT add crypto here – it's now handled separately
   ];
 
-  async function fetchNews({ id, country, category, query = 'business' }) {
-    let url = `https://newsdata.io/api/1/news?apikey=pub_f1b94a0af239455b9d6b8c8197720de0&language=en`;
+  async function fetchNews({ id, country, query = 'business' }) {
+    let url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&language=en`;
 
-    if (country) {
-      const firstCountry = country.split(',')[0]; // ✅ only use the first country
-      url += `&country=${firstCountry}`;
+    if (country) url += `&country=${country.split(',')[0]}`;
+    if (query) url += `&category=${query}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.results) throw new Error('No results');
+      displayNews(id, data.results);
+    } catch (err) {
+      console.error(`❌ Failed to load news for ${id}:`, err);
+      document.getElementById(id).innerHTML =
+        '<p>Error loading news. Please try again later.</p>';
+    }
+  }
+
+  function displayNews(id, articles) {
+    const container = document.getElementById(id);
+    container.innerHTML = '';
+
+    if (!articles.length) {
+      container.innerHTML = '<p>No news available at this time.</p>';
+      return;
     }
 
-    if (category) {
-      url += `&category=${category}`;
+    articles.forEach(article => {
+      const card = document.createElement('div');
+      card.className = 'news-card';
+      card.innerHTML = `
+        <h3><a href="${article.link || article.url}" target="_blank">${article.title}</a></h3>
+        <p>${new Date(article.pubDate || article.publishedAt).toLocaleString()}</p>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  async function fetchCryptoNews() {
+    const container = document.getElementById('news-crypto');
+    container.innerHTML = '<p>Loading crypto news...</p>';
+
+    const sources = [
+      async () => {
+        const url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&language=en&category=cryptocurrency`;
+        const res = await fetch(url);
+        return (await res.json()).results;
+      },
+      async () => {
+        const url = `https://gnews.io/api/v4/search?q=crypto&token=${gnewsAPI}&lang=en`;
+        const res = await fetch(url);
+        return (await res.json()).articles;
+      },
+      async () => {
+        const url = `http://api.mediastack.com/v1/news?access_key=${mediastackAPI}&categories=business&keywords=crypto&languages=en`;
+        const res = await fetch(url);
+        return (await res.json()).data;
+      },
+      async () => {
+        const url = `https://finnhub.io/api/v1/news?category=crypto&token=${finnhubAPI}`;
+        const res = await fetch(url);
+        return await res.json();
+      }
+    ];
+
+    for (let getNews of sources) {
+      try {
+        const results = await getNews();
+        if (results && results.length > 0) {
+          displayNews('news-crypto', results);
+          return;
+        }
+      } catch (e) {
+        console.warn('One crypto source failed, trying next…', e);
+      }
     }
 
-    if (query && !category) {
-      url += `&category=${query}`;
-    }
+    container.innerHTML = '<p>All crypto sources failed. Please check again later.</p>';
+  }
 
-   try {
-     const res = await fetch(url);
-     const data = await res.json();
-
-     if (!data || !Array.isArray(data.results)) {
-       throw new Error(`Invalid or empty response for ${id}`);
-     }
-
-     const container = document.getElementById(id);
-     container.innerHTML = '';
-
-     if (!data.results || data.results.length === 0) {
-       const errorCard = document.createElement('div');
-       errorCard.className = 'news-card';
-       errorCard.innerHTML = `<p>No news found for this section right now. Please check back later.</p>`;
-      container.appendChild(errorCard);
-     } else {
-       data.results.forEach(article => {
-         const card = document.createElement('div');
-         card.className = 'news-card';
-         card.innerHTML = `
-           <h3><a href="${article.link}" target="_blank">${article.title}</a></h3>
-           <p>${new Date(article.pubDate).toLocaleString()}</p>
-         `;
-         container.appendChild(card);
-       });
-     }
-
-   } catch (err) {
-     console.error(`❌ Failed to load news for ${id}:`, err);
-     document.getElementById(id).innerHTML =
-       '<p>Error loading news. Please try again later.</p>';
-   }
- }
-
-  // Call fetchNews for all regions
+  // Run for each region
   regions.forEach(region => fetchNews(region));
+
+  // Separate: Fetch Crypto news with multi-API fallback
+  fetchCryptoNews();
 </script>
+
+
 
 </body>
 </html>
