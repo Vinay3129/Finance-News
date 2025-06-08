@@ -213,11 +213,20 @@
   ];
 
   async function fetchNews({ id, country, category, query = 'business' }) {
-   let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en`;
+    let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en`;
 
-   if (country) url += `&country=${country}`;
-   if (category) url += `&category=${category}`;
-   if (query && !category) url += `&category=${query}`;
+    if (country) {
+      const firstCountry = country.split(',')[0]; // ✅ only use the first country
+      url += `&country=${firstCountry}`;
+    }
+
+    if (category) {
+      url += `&category=${category}`;
+    }
+
+    if (query && !category) {
+      url += `&category=${query}`;
+    }
 
    try {
      const res = await fetch(url);
