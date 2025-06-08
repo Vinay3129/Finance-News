@@ -32,7 +32,6 @@
       z-index: 1000;
     }
 
-
     header h1 {
       font-size: 1.8rem;
     }
@@ -42,48 +41,42 @@
       display: inline-block;
       width: 100%;
       height: 100%;
-   }
+    }
 
-   header h1 a:hover {
-     text-decoration: underline;
-   }
-   header {
-    position: sticky;
-    top: 0;
-    z-index: 999;
-   }
+    header h1 a:hover {
+      text-decoration: underline;
+    }
 
-   @media (max-width: 768px) {
-    header {
-      flex-direction: column;
-      align-items: flex-start;
-   }
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-   nav {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 0.5rem;
-     margin-top: 0.5rem;
-   }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
 
-   nav a {
-     margin-left: 0;
-     margin-right: 1rem;
-   }
+      nav a {
+        margin-left: 0;
+        margin-right: 1rem;
+      }
 
-   main {
-     padding: 1rem;
-   }
+      main {
+        padding: 1rem;
+      }
 
-   .news-card {
-     font-size: 0.9rem;
-   }
+      .news-card {
+        font-size: 0.9rem;
+      }
 
-   .section-title {
-     font-size: 1.2rem;
-   }
- }
- 
+      .section-title {
+        font-size: 1.2rem;
+      }
+    }
 
     nav a {
       color: white;
@@ -149,16 +142,13 @@
       <a href="#us">US</a>
       <a href="#asia">Asia</a>
       <a href="#europe">Europe</a>
-      <a href="#crypto">Crypto</a>
     </nav>
   </header>
 
   <main>
     <section id="top">
       <h2 class="section-title">Top Financial Headlines</h2>
-      <div class="news-container" id="news">
-        <!-- JS will inject articles here -->
-      </div>
+      <div class="news-container" id="news"></div>
     </section>
 
     <section id="india">
@@ -180,11 +170,6 @@
       <h2 class="section-title">🇪🇺 Europe News</h2>
       <div class="news-container" id="news-europe"></div>
     </section>
-
-    <section id="crypto">
-      <h2 class="section-title">💰 Crypto News</h2>
-      <div class="news-container" id="news-crypto"></div>
-    </section>
   </main>
 
   <footer>
@@ -192,10 +177,7 @@
   </footer>
 
 <script>
-  const newsdataAPI = 'pub_f1b94a0af239455b9d6b8c8197720de0';
-  const gnewsAPI = 'c22aa4e5b3154001c857762ecd73d7ff';
   const mediastackAPI = '4e4537e9a8cbcde4a88979ed2ffc691f';
-  const finnhubAPI = 'd12jnq1r01qmhi3j2sogd12jnq1r01qmhi3j2sp0';
 
   const API_KEYS = {
     newsapi: 'abcdaac9869847b9aeea09a320ae6c61',
@@ -268,56 +250,9 @@
     });
   }
 
-  async function fetchCryptoNews() {
-    const container = document.getElementById('news-crypto');
-    container.innerHTML = '<p>Loading crypto news...</p>';
-
-    const sources = [
-      async () => {
-        const url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&language=en&category=cryptocurrency`;
-        const res = await fetch(url);
-        return (await res.json()).results;
-      },
-      async () => {
-        const url = `https://gnews.io/api/v4/search?q=crypto&token=${gnewsAPI}&lang=en`;
-        const res = await fetch(url);
-        return (await res.json()).articles;
-      },
-      async () => {
-        const url = `http://api.mediastack.com/v1/news?access_key=${mediastackAPI}&categories=business&keywords=crypto&languages=en`;
-        const res = await fetch(url);
-        return (await res.json()).data;
-      },
-      async () => {
-        const url = `https://finnhub.io/api/v1/news?category=crypto&token=${finnhubAPI}`;
-        const res = await fetch(url);
-        return await res.json();
-      }
-    ];
-
-    for (let getNews of sources) {
-      try {
-        const results = await getNews();
-        if (results && results.length > 0) {
-          displayNews('news-crypto', results);
-          return;
-        }
-      } catch (e) {
-        console.warn('One crypto source failed, trying next…', e);
-      }
-    }
-
-    container.innerHTML = '<p>All crypto sources failed. Please check again later.</p>';
-  }
-
-  // Load all business regions with fallback
+  // Load all business regions
   regions.forEach(region => fetchRegionNews(region));
-
-  // Load crypto news with multi-API fallback
-  fetchCryptoNews();
 </script>
-
-
 
 </body>
 </html>
