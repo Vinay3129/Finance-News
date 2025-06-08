@@ -196,11 +196,10 @@
   const gnewsAPI = 'c22aa4e5b3154001c857762ecd73d7ff';
   const mediastackAPI = '4e4537e9a8cbcde4a88979ed2ffc691f';
   const finnhubAPI = 'd12jnq1r01qmhi3j2sogd12jnq1r01qmhi3j2sp0';
-  const newsapi: 'abcdaac9869847b9aeea09a320ae6c61',
-    
+
   const API_KEYS = {
-    newsapi: 'abcdaac9869847b9aeea09a320ae6c61', // Replace with your actual NewsAPI key
-    mediastack: '4e4537e9a8cbcde4a88979ed2ffc691f'
+    newsapi: 'abcdaac9869847b9aeea09a320ae6c61',
+    mediastack: mediastackAPI
   };
 
   const regions = [
@@ -210,23 +209,43 @@
     { id: 'news-europe', keywords: ['europe finance', 'europe business'], category: 'business' }
   ];
 
-  async function fetchNews({ id, country, query = 'business' }) {
-    let url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&language=en`;
+  async function fetchRegionNews(region) {
+    const container = document.getElementById(region.id);
+    container.innerHTML = '<p>Loading news...</p>';
 
-    if (country) url += `&country=${country.split(',')[0]}`;
-    if (query) url += `&category=${query}`;
+    const sources = [
+      async () => {
+        const url = region.countries
+          ? `https://newsapi.org/v2/top-headlines?country=${region.countries[0]}&category=${region.category}&apiKey=${API_KEYS.newsapi}`
+          : `https://newsapi.org/v2/everything?q=${encodeURIComponent(region.keywords.join(' AND '))}&language=en&sortBy=publishedAt&apiKey=${API_KEYS.newsapi}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        return json.articles || [];
+      },
+      async () => {
+        const msParams = [];
+        if (region.countries) msParams.push(`countries=${region.countries.join(',')}`);
+        msParams.push(`categories=${region.category}`);
+        const url = `http://api.mediastack.com/v1/news?access_key=${API_KEYS.mediastack}&${msParams.join('&')}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        return json.data || [];
+      }
+    ];
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (!data.results) throw new Error('No results');
-      displayNews(id, data.results);
-    } catch (err) {
-      console.error(`❌ Failed to load news for ${id}:`, err);
-      document.getElementById(id).innerHTML =
-        '<p>Error loading news. Please try again later.</p>';
+    for (const fetcher of sources) {
+      try {
+        const articles = await fetcher();
+        if (articles && articles.length) {
+          displayNews(region.id, articles.slice(0, 10));
+          return;
+        }
+      } catch (e) {
+        console.warn(`Error fetching for ${region.id}:`, e);
+      }
     }
+
+    container.innerHTML = '<p>No business news available. Please check again later.</p>';
   }
 
   function displayNews(id, articles) {
@@ -291,10 +310,10 @@
     container.innerHTML = '<p>All crypto sources failed. Please check again later.</p>';
   }
 
-  // Run for each region
-  regions.forEach(region => fetchNews(region));
+  // Load all business regions with fallback
+  regions.forEach(region => fetchRegionNews(region));
 
-  // Separate: Fetch Crypto news with multi-API fallback
+  // Load crypto news with multi-API fallback
   fetchCryptoNews();
 </script>
 
