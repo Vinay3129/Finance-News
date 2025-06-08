@@ -191,6 +191,8 @@
     &copy; 2025 Finance Space - Built with ❤️ using GitHub Pages
   </footer>
 
+<!-- ONLY the JavaScript section below is changed from your code -->
+
 <script>
   const newsdataAPI = 'pub_f1b94a0af239455b9d6b8c8197720de0';
   const gnewsAPI = 'c22aa4e5b3154001c857762ecd73d7ff';
@@ -226,7 +228,7 @@
         const msParams = [];
         if (region.countries) msParams.push(`countries=${region.countries.join(',')}`);
         msParams.push(`categories=${region.category}`);
-        const url = `http://api.mediastack.com/v1/news?access_key=${API_KEYS.mediastack}&${msParams.join('&')}`;
+        const url = `https://api.mediastack.com/v1/news?access_key=${API_KEYS.mediastack}&${msParams.join('&')}&languages=en`;
         const res = await fetch(url);
         const json = await res.json();
         return json.data || [];
@@ -258,11 +260,15 @@
     }
 
     articles.forEach(article => {
+      const link = article.url || article.link || '#';
+      const title = article.title || 'Untitled';
+      const date = article.pubDate || article.publishedAt || new Date().toISOString();
+
       const card = document.createElement('div');
       card.className = 'news-card';
       card.innerHTML = `
-        <h3><a href="${article.link || article.url}" target="_blank">${article.title}</a></h3>
-        <p>${new Date(article.pubDate || article.publishedAt).toLocaleString()}</p>
+        <h3><a href="${link}" target="_blank">${title}</a></h3>
+        <p>${new Date(date).toLocaleString()}</p>
       `;
       container.appendChild(card);
     });
@@ -274,7 +280,7 @@
 
     const sources = [
       async () => {
-        const url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&language=en&category=cryptocurrency`;
+        const url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&q=crypto&language=en`;
         const res = await fetch(url);
         return (await res.json()).results;
       },
@@ -284,7 +290,7 @@
         return (await res.json()).articles;
       },
       async () => {
-        const url = `http://api.mediastack.com/v1/news?access_key=${mediastackAPI}&categories=business&keywords=crypto&languages=en`;
+        const url = `https://api.mediastack.com/v1/news?access_key=${mediastackAPI}&categories=business&keywords=crypto&languages=en`;
         const res = await fetch(url);
         return (await res.json()).data;
       },
@@ -316,8 +322,5 @@
   // Load crypto news with multi-API fallback
   fetchCryptoNews();
 </script>
-
-
-
 </body>
 </html>
