@@ -213,7 +213,7 @@
   ];
 
   async function fetchNews({ id, country, category, query = 'business' }) {
-    let url = `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en`;
+    let url = `https://newsdata.io/api/1/news?apikey=pub_f1b94a0af239455b9d6b8c8197720de0&language=en`;
 
     if (country) {
       const firstCountry = country.split(',')[0]; // ✅ only use the first country
