@@ -1,260 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Finance Space</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f8;
-    }
-
-    header {
-      background-color: #004080;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-
-    header h1 {
-      font-size: 1.8rem;
-    }
-    header h1 a {
-      color: inherit;
-      text-decoration: none;
-      display: inline-block;
-      width: 100%;
-      height: 100%;
-   }
-
-   header h1 a:hover {
-     text-decoration: underline;
-   }
-   header {
-    position: sticky;
-    top: 0;
-    z-index: 999;
-   }
-
-   @media (max-width: 768px) {
-    header {
-      flex-direction: column;
-      align-items: flex-start;
-   }
-
-   nav {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 0.5rem;
-     margin-top: 0.5rem;
-   }
-
-   nav a {
-     margin-left: 0;
-     margin-right: 1rem;
-   }
-
-   main {
-     padding: 1rem;
-   }
-
-   .news-card {
-     font-size: 0.9rem;
-   }
-
-   .section-title {
-     font-size: 1.2rem;
-   }
- }
- 
-
-    nav a {
-      color: white;
-      margin-left: 1.5rem;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    .section-title {
-      font-size: 1.4rem;
-      margin: 1.5rem 0 1rem;
-      padding-left: 2rem;
-      color: #333;
-    }
-
-    .news-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      padding: 0 2rem 2rem;
-    }
-
-    .news-card {
-      background: white;
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .news-card h3 {
-      font-size: 1.1rem;
-      color: #004080;
-    }
-
-    .news-card a {
-      text-decoration: none;
-      color: #004080;
-    }
-
-    .news-card a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background-color: #004080;
-      color: white;
-      margin-top: 2rem;
-    }
-  </style>
-</head>
-<body>
-
-  <header>
-    <h1><a href="#" onclick="location.reload();">Finance Space</a></h1>
-    <nav>
-      <a href="#india">India</a>
-      <a href="#us">US</a>
-      <a href="#asia">Asia</a>
-      <a href="#europe">Europe</a>
-      <a href="#crypto">Crypto</a>
-    </nav>
-  </header>
-
-  <main>
-    <section id="top">
-      <h2 class="section-title">Top Financial Headlines</h2>
-      <div class="news-container" id="news">
-        <!-- JS will inject articles here -->
-      </div>
-    </section>
-
-    <section id="india">
-      <h2 class="section-title">🇮🇳 India News</h2>
-      <div class="news-container" id="news-india"></div>
-    </section>
-
-    <section id="us">
-      <h2 class="section-title">🇺🇸 US News</h2>
-      <div class="news-container" id="news-us"></div>
-    </section>
-
-    <section id="asia">
-      <h2 class="section-title">🌏 Asia News</h2>
-      <div class="news-container" id="news-asia"></div>
-    </section>
-
-    <section id="europe">
-      <h2 class="section-title">🇪🇺 Europe News</h2>
-      <div class="news-container" id="news-europe"></div>
-    </section>
-
-    <section id="crypto">
-      <h2 class="section-title">💰 Crypto News</h2>
-      <div class="news-container" id="news-crypto"></div>
-    </section>
-  </main>
-
-  <footer>
-    &copy; 2025 Finance Space - Built with ❤️ using GitHub Pages
-  </footer>
-
-<!-- ONLY the JavaScript section below is changed from your code -->
-
 <script>
-  const newsdataAPI = 'pub_f1b94a0af239455b9d6b8c8197720de0';
-  const gnewsAPI = 'c22aa4e5b3154001c857762ecd73d7ff';
-  const mediastackAPI = '4e4537e9a8cbcde4a88979ed2ffc691f';
-  const finnhubAPI = 'd12jnq1r01qmhi3j2sogd12jnq1r01qmhi3j2sp0';
+  const BACKEND_BASE_URL = 'https://financenewsbackend.onrender.com/api';
 
-  const API_KEYS = {
-    newsapi: 'abcdaac9869847b9aeea09a320ae6c61',
-    mediastack: mediastackAPI
-  };
-
-  const regions = [
-    { id: 'news-india', countries: ['in'], category: 'business' },
-    { id: 'news-us', countries: ['us'], category: 'business' },
-    { id: 'news-asia', keywords: ['asia finance', 'asia business'], category: 'business' },
-    { id: 'news-europe', keywords: ['europe finance', 'europe business'], category: 'business' }
+  const sections = [
+    { id: 'news-india', endpoint: 'india/news' },
+    { id: 'news-us', endpoint: 'us/news' },
+    { id: 'news-asia', endpoint: 'asia/news' },
+    { id: 'news-europe', endpoint: 'europe/news' },
+    { id: 'news-crypto', endpoint: 'crypto/news' }
   ];
 
-  async function fetchRegionNews(region) {
-    const container = document.getElementById(region.id);
-    container.innerHTML = '<p>Loading news...</p>';
-
-    const sources = [
-      async () => {
-        const url = region.countries
-          ? `https://newsapi.org/v2/top-headlines?country=${region.countries[0]}&category=${region.category}&apiKey=${API_KEYS.newsapi}`
-          : `https://newsapi.org/v2/everything?q=${encodeURIComponent(region.keywords.join(' AND '))}&language=en&sortBy=publishedAt&apiKey=${API_KEYS.newsapi}`;
-        const res = await fetch(url);
-        const json = await res.json();
-        return json.articles || [];
-      },
-      async () => {
-        const msParams = [];
-        if (region.countries) msParams.push(`countries=${region.countries.join(',')}`);
-        msParams.push(`categories=${region.category}`);
-        const url = `https://api.mediastack.com/v1/news?access_key=${API_KEYS.mediastack}&${msParams.join('&')}&languages=en`;
-        const res = await fetch(url);
-        const json = await res.json();
-        return json.data || [];
-      }
-    ];
-
-    for (const fetcher of sources) {
-      try {
-        const articles = await fetcher();
-        if (articles && articles.length) {
-          displayNews(region.id, articles.slice(0, 10));
-          return;
-        }
-      } catch (e) {
-        console.warn(`Error fetching for ${region.id}:`, e);
-      }
-    }
-
-    container.innerHTML = '<p>No business news available. Please check again later.</p>';
-  }
-
-  function displayNews(id, articles) {
-    const container = document.getElementById(id);
+  function displayNews(containerId, articles) {
+    const container = document.getElementById(containerId);
     container.innerHTML = '';
 
-    if (!articles.length) {
+    if (!articles || !articles.length) {
       container.innerHTML = '<p>No news available at this time.</p>';
       return;
     }
@@ -263,64 +22,40 @@
       const link = article.url || article.link || '#';
       const title = article.title || 'Untitled';
       const date = article.pubDate || article.publishedAt || new Date().toISOString();
+      const description = article.description || '';
 
       const card = document.createElement('div');
       card.className = 'news-card';
       card.innerHTML = `
         <h3><a href="${link}" target="_blank">${title}</a></h3>
-        <p>${new Date(date).toLocaleString()}</p>
+        <p>${description}</p>
+        <small>${new Date(date).toLocaleString()}</small>
       `;
       container.appendChild(card);
     });
   }
 
-  async function fetchCryptoNews() {
-    const container = document.getElementById('news-crypto');
-    container.innerHTML = '<p>Loading crypto news...</p>';
+  async function fetchSectionNews(containerId, endpoint) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '<p>Loading news...</p>';
+    
+    try {
+      const res = await fetch(`${BACKEND_BASE_URL}/${endpoint}`);
+      const json = await res.json();
 
-    const sources = [
-      async () => {
-        const url = `https://newsdata.io/api/1/news?apikey=${newsdataAPI}&q=crypto&language=en`;
-        const res = await fetch(url);
-        return (await res.json()).results;
-      },
-      async () => {
-        const url = `https://gnews.io/api/v4/search?q=crypto&token=${gnewsAPI}&lang=en`;
-        const res = await fetch(url);
-        return (await res.json()).articles;
-      },
-      async () => {
-        const url = `https://api.mediastack.com/v1/news?access_key=${mediastackAPI}&categories=business&keywords=crypto&languages=en`;
-        const res = await fetch(url);
-        return (await res.json()).data;
-      },
-      async () => {
-        const url = `https://finnhub.io/api/v1/news?category=crypto&token=${finnhubAPI}`;
-        const res = await fetch(url);
-        return await res.json();
+      if (json.articles && json.articles.length > 0) {
+        displayNews(containerId, json.articles);
+      } else {
+        container.innerHTML = '<p>No articles found.</p>';
       }
-    ];
-
-    for (let getNews of sources) {
-      try {
-        const results = await getNews();
-        if (results && results.length > 0) {
-          displayNews('news-crypto', results);
-          return;
-        }
-      } catch (e) {
-        console.warn('One crypto source failed, trying next…', e);
-      }
+    } catch (err) {
+      console.error(`Error loading ${endpoint}:`, err);
+      container.innerHTML = '<p>Failed to load news. Please try again later.</p>';
     }
-
-    container.innerHTML = '<p>All crypto sources failed. Please check again later.</p>';
   }
 
-  // Load all business regions with fallback
-  regions.forEach(region => fetchRegionNews(region));
-
-  // Load crypto news with multi-API fallback
-  fetchCryptoNews();
+  // Load all sections
+  sections.forEach(section => {
+    fetchSectionNews(section.id, section.endpoint);
+  });
 </script>
-</body>
-</html>
