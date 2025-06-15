@@ -1,61 +1,45 @@
 <script>
-  const BACKEND_BASE_URL = 'https://financenewsbackend.onrender.com/api';
+  const SECTIONS = {
+    "news-india": "/api/india/news",
+    "news-us": "/api/us/news",
+    "news-asia": "/api/asia/news",
+    "news-europe": "/api/europe/news",
+    "news-crypto": "/api/crypto/news",
+  };
 
-  const sections = [
-    { id: 'news-india', endpoint: 'india/news' },
-    { id: 'news-us', endpoint: 'us/news' },
-    { id: 'news-asia', endpoint: 'asia/news' },
-    { id: 'news-europe', endpoint: 'europe/news' },
-    { id: 'news-crypto', endpoint: 'crypto/news' }
-  ];
-
-  function displayNews(containerId, articles) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
-    if (!articles || !articles.length) {
-      container.innerHTML = '<p>No news available at this time.</p>';
+  function displayNews(id, articles) {
+    const container = document.getElementById(id);
+    container.innerHTML = "";
+    if (!articles || articles.length === 0) {
+      container.innerHTML = "<p>No news available at this time.</p>";
       return;
     }
-
     articles.forEach(article => {
-      const link = article.url || article.link || '#';
-      const title = article.title || 'Untitled';
+      const link = article.url || article.link;
+      const title = article.title || "Untitled";
       const date = article.pubDate || article.publishedAt || new Date().toISOString();
-      const description = article.description || '';
-
-      const card = document.createElement('div');
-      card.className = 'news-card';
+      const card = document.createElement("div");
+      card.className = "news-card";
       card.innerHTML = `
         <h3><a href="${link}" target="_blank">${title}</a></h3>
-        <p>${description}</p>
-        <small>${new Date(date).toLocaleString()}</small>
+        <p>${new Date(date).toLocaleString()}</p>
       `;
       container.appendChild(card);
     });
   }
 
-  async function fetchSectionNews(containerId, endpoint) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '<p>Loading news...</p>';
-    
-    try {
-      const res = await fetch(`${BACKEND_BASE_URL}/${endpoint}`);
-      const json = await res.json();
-
-      if (json.articles && json.articles.length > 0) {
-        displayNews(containerId, json.articles);
-      } else {
-        container.innerHTML = '<p>No articles found.</p>';
-      }
-    } catch (err) {
-      console.error(`Error loading ${endpoint}:`, err);
-      container.innerHTML = '<p>Failed to load news. Please try again later.</p>';
-    }
-  }
-
-  // Load all sections
-  sections.forEach(section => {
-    fetchSectionNews(section.id, section.endpoint);
+  Object.entries(SECTIONS).forEach(([id, endpoint]) => {
+    const container = document.getElementById(id);
+    container.innerHTML = "<p>Loading...</p>";
+    fetch(`http://127.0.0.1:5000${endpoint}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.articles) displayNews(id, json.articles);
+        else container.innerHTML = "<p>Error loading news.</p>";
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = `<p>Error: ${err.message}</p>`;
+      });
   });
 </script>
